@@ -6,7 +6,9 @@ import { createClient } from "@/lib/supabase/client";
 
 export default function RegistroPage() {
   const supabase = createClient();
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -22,7 +24,11 @@ export default function RegistroPage() {
       email,
       password,
       options: {
-        data: { full_name: fullName },
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          phone: phone,
+        },
       },
     });
 
@@ -59,13 +65,36 @@ export default function RegistroPage() {
       </h1>
 
       <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="pin-label text-muted">Nombre</label>
+            <input
+              type="text"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className="mt-1 w-full rounded border border-panelBorder bg-board px-3 py-2 text-ink outline-none focus:border-copper"
+            />
+          </div>
+          <div>
+            <label className="pin-label text-muted">Apellido</label>
+            <input
+              type="text"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className="mt-1 w-full rounded border border-panelBorder bg-board px-3 py-2 text-ink outline-none focus:border-copper"
+            />
+          </div>
+        </div>
         <div>
-          <label className="pin-label text-muted">Nombre completo</label>
+          <label className="pin-label text-muted">Celular</label>
           <input
-            type="text"
+            type="tel"
             required
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Ej: 351 1234567"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             className="mt-1 w-full rounded border border-panelBorder bg-board px-3 py-2 text-ink outline-none focus:border-copper"
           />
         </div>
