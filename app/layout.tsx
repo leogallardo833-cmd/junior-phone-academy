@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
+import CookieConsent from "@/components/CookieConsent";
 
 const mono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -73,6 +74,7 @@ export default function RootLayout({
           </div>
         </header>
         <main>{children}</main>
+<CookieConsent />
         <footer className="border-t border-panelBorder py-8 text-center text-xs text-muted">
           <span className="pin-label">Junior Phone Academy © {new Date().getFullYear()}</span>
         </footer>
