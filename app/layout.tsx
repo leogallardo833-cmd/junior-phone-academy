@@ -51,6 +51,17 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <>
                   <Link href="/dashboard" className="hover:text-ink">Mis cursos</Link>
                   <SignOutButton />
+                  {user.user_metadata?.avatar_url ? (
+                    <img
+                      src={user.user_metadata.avatar_url}
+                      alt="Foto de perfil"
+                      className="h-8 w-8 rounded-full border border-panelBorder"
+                    />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full border border-panelBorder bg-board text-xs text-copperLight">
+                      {(user.user_metadata?.first_name?.[0] ?? user.email?.[0] ?? "U").toUpperCase()}
+                    </div>
+                  )}
                 </>
               ) : (
                 <>
