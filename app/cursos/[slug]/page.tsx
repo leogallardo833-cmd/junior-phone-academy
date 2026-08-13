@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
+import BuyButton from "@/components/BuyButton";
 
 export default async function CourseDetailPage({
   params,
@@ -14,7 +15,11 @@ export default async function CourseDetailPage({
     .eq("published", true)
     .single();
 
-  if (!course) return notFound();
+ if (!course) return notFound();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: lessons } = await supabase
     .from("lessons")
@@ -35,17 +40,7 @@ export default async function CourseDetailPage({
           <span className="font-mono text-2xl text-trace">
             USD {course.price_usd}
           </span>
-          {/*
-            Fase 2: este botón va a llamar a /api/mercadopago/create-preference
-            y redirigir al checkout de Mercado Pago.
-          */}
-          <button
-            disabled
-            className="rounded bg-copper px-5 py-2 font-semibold text-board opacity-60"
-            title="Se habilita en la Fase 2 (checkout con Mercado Pago)"
-          >
-            Comprar curso
-          </button>
+        <BuyButton courseId={course.id} isLoggedIn={!!user} />
         </div>
       </div>
 

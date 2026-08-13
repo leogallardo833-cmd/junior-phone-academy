@@ -26,7 +26,14 @@ export async function middleware(request: NextRequest) {
   );
 
   // Mantiene la sesión viva; necesario para Server Components.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Protege el área de alumno: sin sesión, redirige a login
+  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   return response;
 }
