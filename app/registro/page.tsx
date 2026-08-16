@@ -11,6 +11,7 @@ export default function RegistroPage() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,8 +24,14 @@ async function handleGoogleLogin() {
       },
     });
   }
-  async function handleSubmit(e: React.FormEvent) {
+async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (!acceptedTerms) {
+      setError("Tenes que aceptar los Terminos y Condiciones para continuar.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -127,6 +134,22 @@ async function handleGoogleLogin() {
             className="mt-1 w-full rounded border border-panelBorder bg-board px-3 py-2 text-ink outline-none focus:border-copper"
           />
         </div>
+
+        <label className="flex items-start gap-2 text-sm text-muted">
+          <input
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e) => setAcceptedTerms(e.target.checked)}
+            className="mt-1"
+          />
+          <span>
+            Acepto los{" "}
+            <a href="/terminos" target="_blank" className="text-copperLight hover:underline">
+              Terminos y Condiciones
+            </a>{" "}
+            y el tratamiento de mis datos personales (nombre, email, celular y contraseña).
+          </span>
+        </label>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
 
