@@ -41,7 +41,7 @@ export default function BuyButton({
     <button
       onClick={handleClick}
       disabled={loading}
-      className="rounded bg-copper px-5 py-2 font-semibold text-board transition hover:bg-copperLight disabled:opacity-60"
+     className="w-full rounded bg-copper px-5 py-3 font-semibold text-board transition hover:bg-copperLight disabled:opacity-60"
     >
       {loading ? "Redirigiendo..." : "Comprar curso"}
     </button>
