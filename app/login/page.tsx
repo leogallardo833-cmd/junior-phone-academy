@@ -61,7 +61,12 @@ async function handleGoogleLogin() {
           />
         </div>
         <div>
-          <label className="pin-label text-muted">Contraseña</label>
+          <div className="flex items-center justify-between">
+            <label className="pin-label text-muted">Contraseña</label>
+            <Link href="/recuperar" className="text-xs text-copperLight hover:underline">
+              Olvidaste tu contraseña?
+            </Link>
+          </div>
           <input
             type="password"
             required
