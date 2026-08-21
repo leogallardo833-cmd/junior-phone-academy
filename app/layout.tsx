@@ -36,6 +36,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     data: { user },
   } = await supabase.auth.getUser();
 
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase.from("profiles").select("is_admin").eq("id", user.id).single();
+    isAdmin = !!profile?.is_admin;
+  }
+
   return (
     <html lang="es">
       <body className={`${mono.variable} ${sans.variable} font-sans`}>
@@ -49,7 +55,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <Link href="/" className="hover:text-ink">Cursos</Link>
               {user ? (
                 <>
-                  <Link href="/dashboard" className="hover:text-ink">Mis cursos</Link>
+                                    <Link href="/dashboard" className="hover:text-ink">Mis cursos</Link>
+                  {isAdmin && (
+                    <Link href="/admin" className="hover:text-ink">Panel</Link>
+                  )}
                   <SignOutButton />
                   {user.user_metadata?.avatar_url ? (
                     <img
