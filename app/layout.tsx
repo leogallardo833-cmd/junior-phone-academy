@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import SignOutButton from "@/components/SignOutButton";
 import CookieConsent from "@/components/CookieConsent";
+import WhatsAppButton from "@/components/WhatsAppButton";
 import { createClient } from "@/lib/supabase/server";
 
 const mono = IBM_Plex_Mono({
@@ -82,7 +83,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
         <main>{children}</main>
-        <CookieConsent />
+                <CookieConsent />
+        <WhatsAppButton />
         <footer className="border-t border-panelBorder py-8 text-center text-xs text-muted">
           <span className="pin-label">Junior Phone Academy (c) {new Date().getFullYear()}</span>
         </footer>
