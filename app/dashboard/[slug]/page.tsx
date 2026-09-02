@@ -2,15 +2,16 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import LessonList from "@/components/LessonList";
 
-export default async function DashboardCoursePage({ params }: { params: { slug: string } }) {
-  const supabase = createClient();
+export default async function DashboardCoursePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) redirect("/login");
 
-  const { data: course } = await supabase.from("courses").select("*").eq("slug", params.slug).single();
+  const { data: course } = await supabase.from("courses").select("*").eq("slug", slug).single();
 
   if (!course) return notFound();
 
@@ -22,7 +23,7 @@ export default async function DashboardCoursePage({ params }: { params: { slug: 
     .eq("status", "approved")
     .maybeSingle();
 
-  if (!purchase) redirect(`/cursos/${params.slug}`);
+  if (!purchase) redirect(`/cursos/${slug}`);
 
   const { data: lessons } = await supabase
     .from("lessons")
@@ -43,7 +44,7 @@ export default async function DashboardCoursePage({ params }: { params: { slug: 
       <span className="pin-label text-copperLight">Curso</span>
       <h1 className="mt-2 font-mono text-2xl font-semibold text-ink">{course.title}</h1>
 
-      {isCompleted && (<a href={`/api/certificate/${params.slug}`} className="mt-6 inline-block rounded bg-trace px-5 py-3 font-semibold text-board hover:opacity-90">Descargar certificado</a>)}
+      {isCompleted && (<a href={`/api/certificate/${slug}`} className="mt-6 inline-block rounded bg-trace px-5 py-3 font-semibold text-board hover:opacity-90">Descargar certificado</a>)}
 
       <LessonList lessons={lessons ?? []} completedIds={completedIds} userId={user.id} />
     </div>

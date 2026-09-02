@@ -2,14 +2,10 @@ import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
 import BuyButton from "@/components/BuyButton";
 
-export default async function CourseDetailPage({ params }: { params: { slug: string } }) {
-  const supabase = createClient();
-  const { data: course } = await supabase
-    .from("courses")
-    .select("*")
-    .eq("slug", params.slug)
-    .eq("published", true)
-    .single();
+export default async function CourseDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
+  const { data: course } = await supabase.from("courses").select("*").eq("slug", slug).eq("published", true).single();
 
   if (!course) return notFound();
 
@@ -90,9 +86,7 @@ export default async function CourseDetailPage({ params }: { params: { slug: str
             <div className="mt-5">
               <BuyButton courseId={course.id} isLoggedIn={!!user} />
             </div>
-            {lessons && (
-              <p className="mt-4 text-xs text-muted">{lessons.length} clases · Acceso de por vida</p>
-            )}
+            {lessons && <p className="mt-4 text-xs text-muted">{lessons.length} clases · Acceso de por vida</p>}
           </div>
         </aside>
       </div>

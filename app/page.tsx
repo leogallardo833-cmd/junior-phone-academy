@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import CourseCard from "@/components/CourseCard";
 
 export default async function HomePage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: courses } = await supabase
     .from("courses")
     .select("slug, title, description, price_usd")

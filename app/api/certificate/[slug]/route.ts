@@ -4,15 +4,16 @@ import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import fs from "fs";
 import path from "path";
 
-export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
-  const supabase = createClient();
+export async function GET(request: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
-  const { data: course } = await supabase.from("courses").select("*").eq("slug", params.slug).single();
+  const { data: course } = await supabase.from("courses").select("*").eq("slug", slug).single();
   if (!course) return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
 
   const { data: purchase } = await supabase
@@ -43,11 +44,7 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     return NextResponse.json({ error: "Todavia no completaste el curso" }, { status: 403 });
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name, last_name")
-    .eq("id", user.id)
-    .single();
+  const { data: profile } = await supabase.from("profiles").select("first_name, last_name").eq("id", user.id).single();
 
   const fullName = `${profile?.first_name ?? ""} ${profile?.last_name ?? ""}`.trim() || user.email || "Alumno";
 
@@ -61,68 +58,26 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
   const logoDims = logoImage.scale(0.22);
 
   page.drawRectangle({ x: 0, y: 0, width, height, color: rgb(0.06, 0.1, 0.08) });
-  page.drawRectangle({
-    x: 20,
-    y: 20,
-    width: width - 40,
-    height: height - 40,
-    borderColor: rgb(0.79, 0.48, 0.29),
-    borderWidth: 2,
-  });
+  page.drawRectangle({ x: 20, y: 20, width: width - 40, height: height - 40, borderColor: rgb(0.79, 0.48, 0.29), borderWidth: 2 });
 
-  page.drawImage(logoImage, {
-    x: width / 2 - logoDims.width / 2,
-    y: height - 170,
-    width: logoDims.width,
-    height: logoDims.height,
-  });
+  page.drawImage(logoImage, { x: width / 2 - logoDims.width / 2, y: height - 170, width: logoDims.width, height: logoDims.height });
 
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
   const title = "CERTIFICADO DE FINALIZACION";
-  page.drawText(title, {
-    x: width / 2 - fontBold.widthOfTextAtSize(title, 24) / 2,
-    y: height - 220,
-    size: 24,
-    font: fontBold,
-    color: rgb(0.5, 0.91, 0.69),
-  });
+  page.drawText(title, { x: width / 2 - fontBold.widthOfTextAtSize(title, 24) / 2, y: height - 220, size: 24, font: fontBold, color: rgb(0.5, 0.91, 0.69) });
 
   const line1 = "Se otorga el presente certificado a";
-  page.drawText(line1, {
-    x: width / 2 - font.widthOfTextAtSize(line1, 14) / 2,
-    y: height - 270,
-    size: 14,
-    font,
-    color: rgb(0.93, 0.92, 0.88),
-  });
+  page.drawText(line1, { x: width / 2 - font.widthOfTextAtSize(line1, 14) / 2, y: height - 270, size: 14, font, color: rgb(0.93, 0.92, 0.88) });
 
-  page.drawText(fullName, {
-    x: width / 2 - fontBold.widthOfTextAtSize(fullName, 28) / 2,
-    y: height - 320,
-    size: 28,
-    font: fontBold,
-    color: rgb(1, 1, 1),
-  });
+  page.drawText(fullName, { x: width / 2 - fontBold.widthOfTextAtSize(fullName, 28) / 2, y: height - 320, size: 28, font: fontBold, color: rgb(1, 1, 1) });
 
   const courseLine = `por haber completado el curso "${course.title}"`;
-  page.drawText(courseLine, {
-    x: width / 2 - font.widthOfTextAtSize(courseLine, 14) / 2,
-    y: height - 360,
-    size: 14,
-    font,
-    color: rgb(0.93, 0.92, 0.88),
-  });
+  page.drawText(courseLine, { x: width / 2 - font.widthOfTextAtSize(courseLine, 14) / 2, y: height - 360, size: 14, font, color: rgb(0.93, 0.92, 0.88) });
 
   const dateStr = new Date().toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
-  page.drawText(dateStr, {
-    x: width / 2 - font.widthOfTextAtSize(dateStr, 12) / 2,
-    y: 60,
-    size: 12,
-    font,
-    color: rgb(0.56, 0.64, 0.6),
-  });
+  page.drawText(dateStr, { x: width / 2 - font.widthOfTextAtSize(dateStr, 12) / 2, y: 60, size: 12, font, color: rgb(0.56, 0.64, 0.6) });
 
   const pdfBytes = await pdfDoc.save();
 
